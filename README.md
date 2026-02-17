@@ -1,78 +1,66 @@
-# fastmcp_local_client
-MCP Multi-Server Client (LangChain + FastMCP)
+🚀 MCP Multi-Server Client
+LangChain + FastMCP + Ollama Integration
 
-A Python client for connecting to multiple MCP servers (local + remote) and invoking tools through an (local) LLM agent.
+A production-style MCP client that connects to local and remote MCP servers, loads tools dynamically, and executes them via an LLM agent.
 
-This project demonstrates how to:
+✨ What This Project Does
 
-connect to local MCP servers via stdio
+This client:
 
-connect to remote MCP servers over HTTP
+🔌 Connects to multiple MCP servers
 
-load API keys securely using .env
+🧠 Loads tools dynamically from MCP endpoints
 
-integrate MCP tools with LangChain agents
+🤖 Uses an LLM (Ollama/HuggingFace) to decide tool usage
 
-execute tool calls dynamically using an LLM (Ollama / HuggingFace)
+🌐 Supports local (stdio) and remote (HTTP) MCP
 
-Features
+🔐 Loads API keys securely from .env
 
-Multi-server MCP connectivity
+⚙️ Executes tool calls automatically
 
-Local server execution using uv run
+🧭 Architecture Overview
+        +---------------------+
+        |     LLM Agent       |
+        |  (Ollama / HF)      |
+        +----------+----------+
+                   |
+                   v
+        +---------------------+
+        |  LangChain MCP      |
+        |   Multi Client      |
+        +----------+----------+
+                   |
+        +----------+----------+
+        |                     |
+        v                     v
+ Local MCP Server      Remote FastMCP Server
+ (stdio transport)     (HTTP transport)
 
-Remote FastMCP server integration
-
-Environment-based API key loading
-
-LangChain agent with tool binding
-
-Automatic tool execution loop
-
-Works with:
-
-Ollama models
-
-HuggingFace endpoints
-
-FastMCP deployments
-
-Project Structure
+📁 Project Structure
 .
-├── client1.py
-├── .env
+├── client1.py          # MCP client implementation
+├── .env                # API keys (not committed)
 ├── README.md
 
-Requirements
+🧱 Step 1 — Install Requirements
+pip install langchain langchain-core \
+langchain-mcp-adapters \
+langchain-ollama \
+langchain-huggingface \
+python-dotenv
 
-Install dependencies:
-
-pip install langchain langchain-core langchain-mcp-adapters \
-langchain-ollama langchain-huggingface python-dotenv asyncio
-
-
-You also need:
-
-Python 3.10+
-
-Ollama installed (for local LLM)
-
-FastMCP server deployed (local or remote)
-
-Environment Setup
+🔐 Step 2 — Setup Environment Variables
 
 Create a .env file:
 
-FASTMCP_API_KEY=sk-fmcp-xxxxxxxxxxxx
+FASTMCP_API_KEY=sk-fmcp-xxxxxxxxxxxxxxxx
 
 
-This key is used for authenticating remote MCP servers.
+This is required for remote FastMCP authentication.
 
-MCP Server Configuration
-
-Inside client1.py, define servers:
-
-Local MCP server (stdio)
+🖥️ Step 3 — Configure MCP Servers
+🧪 Local MCP Server (stdio)
 "demo_server": {
     "transport": "stdio",
     "command": r"C:\Users\mrina\.local\bin\uv.exe",
@@ -83,7 +71,7 @@ Local MCP server (stdio)
     ],
 }
 
-Remote FastMCP server (HTTP)
+☁️ Remote FastMCP Server (HTTP)
 "expense_tracker": {
     "transport": "http",
     "url": "https://cooperative-lavender-gazelle.fastmcp.app/mcp",
@@ -91,34 +79,3 @@ Remote FastMCP server (HTTP)
         "Authorization": f"Bearer {os.getenv('FASTMCP_API_KEY')}"
     }
 }
-
-Running the Client
-
-Activate environment:
-
-python client1.py
-
-
-The client will:
-
-Connect to MCP servers
-
-Fetch available tools
-
-Bind tools to LLM
-
-Send prompt to model
-
-Execute tool calls if requested
-
-Return final response
-
-Example Prompt
-add a new expense- Cab ride to Amazon office, 110 rs spent, choose category from the resource.
-
-
-Agent decides:
-
-whether to respond directly
-
-or invoke MCP tool
